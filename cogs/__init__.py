@@ -1,1 +1,1 @@
-from .GameCog import GameCog
+from .GamesCog import GamesCog

@@ -1,6 +1,7 @@
 from datetime import datetime
 
 def time_delta_str_tuple(timestamp: datetime.timestamp) -> tuple:
+  '''Returns a datetime time delta string tuple'''
   delta = datetime.fromtimestamp(timestamp) - datetime.now()
   times = str(delta).split(', ')
   days = times[0]
