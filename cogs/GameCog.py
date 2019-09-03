@@ -23,10 +23,11 @@ class GameCog(commands.Cog):
 
   def __repr__(self):
     return f'{hex(id(self))}'
+
   def __iter__(self):
     if self.last_result is not None and self.last_result:
       return self.last_result[self.last_target].items()
-    return iter([])
+    return dict().items()
 
   def _update_state(self,
                     command: str,
@@ -62,7 +63,7 @@ class GameCog(commands.Cog):
     game, err = await async_query_igdb('games', game_name, 'name,first_release_date')
     self._update_state('date', game_name, game, member, err)
     timestamp = game.get('first_release_date', False)
-    
+
     if err is not None or not timestamp:
       await ctx.send(f'Sorry, I was unable to find the release date for {game_name}')
     else:
