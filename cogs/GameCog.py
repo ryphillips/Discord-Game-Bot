@@ -48,7 +48,7 @@ class GameCog(commands.Cog):
   async def date(self, ctx, *args, member: discord.Member = None) -> None:
     '''
     Attempts to send the time until release for the game argument
-    
+
     @params:
       ctx - provided by discord to send messages with the bot
       *args - what the client types after !date
@@ -59,12 +59,10 @@ class GameCog(commands.Cog):
 
     member = member if member is not None else ctx.author
     game_name = str(' ').join(args)
-    game, err = await async_query_igdb('games',
-      game_name, 'name,first_release_date')
-    timestamp = game.get('first_release_date', False)
-
+    game, err = await async_query_igdb('games', game_name, 'name,first_release_date')
     self._update_state('date', game_name, game, member, err)
-
+    timestamp = game.get('first_release_date', False)
+    
     if err is not None or not timestamp:
       await ctx.send(f'Sorry, I was unable to find the release date for {game_name}')
     else:
