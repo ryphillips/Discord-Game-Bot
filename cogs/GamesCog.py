@@ -1,3 +1,6 @@
+# Games Cog 
+# ryphillips ©2019
+
 from os import environ
 from json import loads
 from aiohttp import ClientSession, ClientError
@@ -110,7 +113,7 @@ class GamesCog(commands.Cog, name='Games'):
 
       genres = ''
       if game.get('genres', None) is not None and game['genres']:
-        
+
         for genre in game['genres']:
           if genres:
             genres += ', '

@@ -1,5 +1,5 @@
 # Discord Game Bot
-# Ryan Phillips ©2019
+# ryphillips ©2019
 from os import environ
 from os.path import dirname, join
 from dotenv import load_dotenv
