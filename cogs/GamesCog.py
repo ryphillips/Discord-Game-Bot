@@ -106,20 +106,17 @@ class GamesCog(commands.Cog, name='Game'):
     game, err = await async_query_igdb('games', game_name, filters)
     self._update_state('date', game_name, game, member, bool(err))
     timestamp = game.get('first_release_date', False)
-
     if err is not None or not timestamp:
       await ctx.send(f'Sorry, I was unable to find the release date for {game_name}')
       return
 
     days, hours, mins, secs = time_delta_str_tuple(timestamp)
-
     if int(days.split(' ')[0]) < 0:
       ctx.send(f'{game_name} has already been released!')
       return
 
     countdown = f'{days}, {hours} hours, {mins} mins, and {secs} seconds!'
     game_pic = game.get('cover', False)
-
     if not game_pic:
       await ctx.send(f'{game_name} releases in {countdown}')
     else:
