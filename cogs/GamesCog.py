@@ -18,7 +18,6 @@ async def async_query_igdb(e_point: str, target: str, filters: str) -> tuple:
 
   @igdb docs:
     https://api-docs.igdb.com
-
   '''
   if not (isinstance(target, str) and
           isinstance(e_point, str) and
@@ -31,20 +30,23 @@ async def async_query_igdb(e_point: str, target: str, filters: str) -> tuple:
 
   url = f'https://api-v3.igdb.com/{e_point}?search={target}&fields={filters}'
   headers = {'user-key': environ.get('IGDB_KEY')}
+
   async with ClientSession(headers=headers, raise_for_status=False) as sess:
     try:
       async with sess.get(url, raise_for_status=True) as res:
-        data = loads(await res.read())[0]
+        data = loads(await res.read())
     except (ClientError, IndexError) as ex:
       if not sess.closed:
         await sess.close()
       return {}, ex
     else:
-      return data, None
+      if not data:
+        return {}, Exception()
+      return data[0], None
 
-class GamesCog(commands.Cog, name='Game'):
+class GamesCog(commands.Cog, name='Games'):
   '''Game Cog - Commands for game related information'''
-  def __init__(self, bot, **options):
+  def __init__(self, bot: commands.Bot, **options):
     '''
     @constructor
       bot - the bot ref that the cog will send messages through
@@ -86,6 +88,32 @@ class GamesCog(commands.Cog, name='Game'):
     self.last_result = result
     self.last_result_was_error = err
 
+  def _make_game_embed(self,
+                       game: dict,
+                       title: str,
+                       description: str,
+                       **options) -> discord.Embed:
+    '''
+    @private
+    Creates a new embeded message w/ game meta info
+    '''
+    embed = discord.Embed(title=title,
+                          description=description,
+                          colour=1024228,
+                          type='rich')
+
+    if game.get('cover', None) is not None:
+      game_pic_sm = 'https:'+game['cover']['url']
+      game_pic_lg = game_pic_sm.replace('t_thumb', 't_cover_big', 1)
+      embed.set_image(url=game_pic_lg)
+      genres = 'Any'
+      if game.get('genres', None) is not None and game['genres']:
+        genres = game['genres'][0]['name']
+      embed.set_footer(text=f'{title} ({genres})', icon_url=game_pic_sm)
+      
+    return embed
+
+
   @commands.command()
   async def when(self, ctx, *args, member: discord.Member = None) -> None:
     '''
@@ -102,37 +130,19 @@ class GamesCog(commands.Cog, name='Game'):
     game_name = str(' ').join(args)
     member = member if member is not None else ctx.author
     filters = 'name,first_release_date,cover.url,genres.name'
+
     game, err = await async_query_igdb('games', game_name, filters)
     self._update_state('date', game_name, game, member, bool(err))
-    timestamp = game.get('first_release_date', False)
 
+    timestamp = game.get('first_release_date', False)
     if err is not None or not timestamp:
       await ctx.send(f'Sorry, I was unable to find the release date for {game_name}')
       return
 
     days, hours, mins, secs = time_delta_str_tuple(timestamp)
-
     if int(days.split(' ')[0]) < 0:
       await ctx.send(f'{game_name} has already been released!')
       return
 
-    countdown = f'{days}, {hours} hours, {mins} mins, and {secs} seconds!'
-    game_pic = game.get('cover', False)
-
-    if not game_pic: # dont send embeded message
-      await ctx.send(f'{game_name} releases in {countdown}')
-    else:
-      embed = discord.Embed(title=game_name + ' countdown:',
-                            description=countdown,
-                            colour=1024228,
-                            type='rich')
-
-      genres = None
-      if game.get('genres', None) is not None:
-        genres = game['genres'][0]['name']
-        
-      pic_url_small = 'https:' + game_pic['url']
-      pic_url_big = pic_url_small.replace('t_thumb', 't_cover_big', 1)
-      embed.set_image(url=pic_url_big)
-      embed.set_footer(text=f'{game_name} {genres}', icon_url=pic_url_small)
-      await ctx.send('', embed=embed)
+    countdown = f'Releases in:\n{days}, {hours} hours, {mins} mins, and {secs} seconds!'
+    await ctx.send('', embed=self._make_game_embed(game, game_name, countdown))
