@@ -22,7 +22,7 @@ async def async_query_igdb(e_point: str, target: str, filters: str) -> tuple:
   '''
   if not (isinstance(target, str) and
           isinstance(e_point, str) and
-          isinstance(filter, str)):
+          isinstance(filters, str)):
     return {}, TypeError('All arguments must be strings')
 
   if not target or not e_point:
@@ -96,35 +96,43 @@ class GamesCog(commands.Cog, name='Game'):
     Replies with the time until the game argument is released
     '''
     if not args:
-      ctx.send('when command example -> !when borderlands 3')
+      await ctx.send('when command example -> !when borderlands 3')
       return
 
     game_name = str(' ').join(args)
     member = member if member is not None else ctx.author
-    filters = 'name,first_release_date,cover.url'
-    
+    filters = 'name,first_release_date,cover.url,genres.name'
     game, err = await async_query_igdb('games', game_name, filters)
     self._update_state('date', game_name, game, member, bool(err))
     timestamp = game.get('first_release_date', False)
+
     if err is not None or not timestamp:
       await ctx.send(f'Sorry, I was unable to find the release date for {game_name}')
       return
 
     days, hours, mins, secs = time_delta_str_tuple(timestamp)
+
     if int(days.split(' ')[0]) < 0:
-      ctx.send(f'{game_name} has already been released!')
+      await ctx.send(f'{game_name} has already been released!')
       return
 
     countdown = f'{days}, {hours} hours, {mins} mins, and {secs} seconds!'
     game_pic = game.get('cover', False)
-    if not game_pic:
+
+    if not game_pic: # dont send embeded message
       await ctx.send(f'{game_name} releases in {countdown}')
     else:
-      game_pic_url = game_pic['url']
       embed = discord.Embed(title=game_name + ' countdown:',
                             description=countdown,
                             colour=1024228,
                             type='rich')
 
-      embed.set_footer(text=game_name, icon_url=game_pic_url)
-      await ctx.send(embed)
+      genres = None
+      if game.get('genres', None) is not None:
+        genres = game['genres'][0]['name']
+        
+      pic_url_small = 'https:' + game_pic['url']
+      pic_url_big = pic_url_small.replace('t_thumb', 't_cover_big', 1)
+      embed.set_image(url=pic_url_big)
+      embed.set_footer(text=f'{game_name} {genres}', icon_url=pic_url_small)
+      await ctx.send('', embed=embed)
