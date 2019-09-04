@@ -102,15 +102,32 @@ class GamesCog(commands.Cog, name='Games'):
                           colour=1024228,
                           type='rich')
 
+    # picture is required to send full embed
     if game.get('cover', None) is not None:
       game_pic_sm = 'https:'+game['cover']['url']
       game_pic_lg = game_pic_sm.replace('t_thumb', 't_cover_big', 1)
       embed.set_image(url=game_pic_lg)
-      genres = 'Any'
+
+      genres = ''
       if game.get('genres', None) is not None and game['genres']:
-        genres = game['genres'][0]['name']
-      embed.set_footer(text=f'{title} ({genres})', icon_url=game_pic_sm)
-      
+        for genre in game['genres']:
+          if genres:
+            genres += ', '
+          genres += genre['name']
+
+      if not genres:
+        genres = 'Any'
+
+      embed.add_field(name='Genre', value=genres)
+      git = 'Powered by https://github.com/ryphillips/DiscordBot/blob/master/cogs/GamesCog.py'
+      embed.set_footer(text=f'{git}', icon_url=game_pic_sm)
+
+    for key, value in options.items():
+      try:
+        embed.add_field(name=key, value=game.get(key, value))
+      except KeyError:
+        pass
+
     return embed
 
 
