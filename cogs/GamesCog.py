@@ -110,6 +110,7 @@ class GamesCog(commands.Cog, name='Games'):
 
       genres = ''
       if game.get('genres', None) is not None and game['genres']:
+        
         for genre in game['genres']:
           if genres:
             genres += ', '
@@ -123,10 +124,7 @@ class GamesCog(commands.Cog, name='Games'):
       embed.set_footer(text=f'{git}', icon_url=game_pic_sm)
 
     for key, value in options.items():
-      try:
-        embed.add_field(name=key, value=game.get(key, value))
-      except KeyError:
-        pass
+      embed.add_field(name=key, value=game.get(key, value))
 
     return embed
 
