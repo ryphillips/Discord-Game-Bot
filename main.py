@@ -8,11 +8,11 @@ from cogs import GamesCog
 
 load_dotenv(join(dirname(__file__), '.env'))
 
-if __name__ == '__main__':
-
-  bot = Bot(command_prefix=['!', '$'],
+bot = Bot(command_prefix=['!', '$'],
             help_command=None,
             description='Cool commands for discord!')
 
-  bot.add_cog(GamesCog(bot))
+bot.add_cog(GamesCog(bot))
+
+if __name__ == '__main__':
   bot.run(environ.get('DISCORD_CLIENT_ID')) # this method blocks
