@@ -58,7 +58,6 @@ class GamesCog(commands.Cog, name='Games'):
     self.last_command = None
     self.last_member = None
     self.last_result = None
-    self.last_result_was_error = False
     self.last_target = None
     self.options = options
 
@@ -66,7 +65,7 @@ class GamesCog(commands.Cog, name='Games'):
     return f'Discord Cog {hex(id(self))}'
 
   def __str__(self):
-    if self.last_target is None or self.last_result_was_error:
+    if self.last_target is None:
       return self.bot.__str__()
     return f'Games Cog currently looking at {self.last_target}'
 
@@ -79,8 +78,7 @@ class GamesCog(commands.Cog, name='Games'):
                     command: str,
                     target: str,
                     result: dict,
-                    member: discord.Member,
-                    err: bool) -> None:
+                    member: discord.Member) -> None:
     '''
     @private
     Updates the state of the cog
@@ -89,7 +87,6 @@ class GamesCog(commands.Cog, name='Games'):
     self.last_command = command
     self.last_member = member
     self.last_result = result
-    self.last_result_was_error = err
 
   @commands.command()
   async def when(self, ctx, *args, member: discord.Member = None) -> None:
@@ -115,7 +112,7 @@ class GamesCog(commands.Cog, name='Games'):
       return
 
     # known to be a valid result
-    self._update_state('date', game_name, game, member, bool(err))
+    self._update_state('date', game_name, game, member)
 
     days, hours, mins, secs = time_delta_tuple(timestamp)
     if days < 0:
