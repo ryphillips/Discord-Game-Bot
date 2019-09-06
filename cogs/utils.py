@@ -22,9 +22,10 @@ def make_game_embed(game: dict, title: str, description: str, **options) -> disc
   '''
   embed = discord.Embed(title=title,
                         description=description,
-                        colour=1024228,
+                        colour=1024228, # blue
                         type='rich')
 
+  # options passed in are all turned fields
   for key, value in options.items():
     embed.add_field(name=key, value=game.get(key, value))
 
