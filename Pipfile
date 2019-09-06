@@ -7,7 +7,8 @@ verify_ssl = true
 pytest = "*"
 
 [packages]
-discord = "*"
+discord-py = "*"
+python-dotenv = "*"
 
 [requires]
 python_version = "3.7"
