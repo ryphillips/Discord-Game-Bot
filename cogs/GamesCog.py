@@ -109,16 +109,16 @@ class GamesCog(commands.Cog, name='Games'):
     member = member if member is not None else ctx.author
     filters = 'name,first_release_date,cover.url,genres.name'
     game, err = await async_query_igdb('games', game_name, filters)
-
     timestamp = game.get('first_release_date', False)
+
     if err is not None or not timestamp:
       await ctx.send(f'Sorry, I was unable to find the release date for {game_name}')
       return
 
     # known to be a valid result for the !when command
     self._update_state('date', game_name, game, member)
-
     days, hours, mins, secs = time_delta_tuple(timestamp)
+    
     if days < 0:
       await ctx.send(f'{game_name} has already been released!')
       return
