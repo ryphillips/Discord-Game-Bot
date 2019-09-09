@@ -1,7 +1,7 @@
 from discord.ext import commands
 
 class ListenersCog(commands.Cog, name='Listeners'):
-  '''All Listeners for the main  bot'''
+  '''All Listeners for the bot'''
   def __init__(self, bot: commands.Bot, **options):
     self.bot = bot
     self.options = options

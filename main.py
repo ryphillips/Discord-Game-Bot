@@ -18,13 +18,19 @@ BOT.add_cog(ListenersCog(BOT))
 
 @BOT.event
 async def on_ready():
-  '''When the bot is booted'''
+  '''Adjust instructions for when bot is booted'''
   await BOT.change_presence(status=discord.Status.idle,
                             activity=discord.Game('Dark Souls 3'))
 
+@BOT.event
+async def on_error():
+  '''Adjust error callback'''
+  pass
+
+
 if __name__ == '__main__':
-  print('\nThe bot is now active\nPress (ctrl c) to deactivate and exit\n')
   try:
+    print('\nThe bot is now active\nPress (ctrl c) to deactivate and exit\n')
     BOT.run(environ.get('DISCORD_CLIENT_ID'))
   except:
-    print('\nError connecting to discord, check your internet!\nExiting now..\n')
+    print('\nNetwork connectivity error!\\n')
