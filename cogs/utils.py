@@ -57,7 +57,7 @@ def make_game_embed(game: dict, title: str, description: str, **options) -> disc
     
     embed.add_field(name='Companies', value=companies, inline=False)
     embed.add_field(name='Genres', value=genres)
-    git = 'Powered by https://github.com/ryphillips/DiscordBot'
+    git = 'https://github.com/ryphillips/Discord-Game-Bot'
     embed.set_footer(text=git, icon_url=game_pic_sm)
 
   return embed
