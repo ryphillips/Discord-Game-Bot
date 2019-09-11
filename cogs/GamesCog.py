@@ -34,7 +34,6 @@ async def async_query_igdb(e_point: str, target: str, filters: str) -> tuple:
   url = f'https://api-v3.igdb.com/{e_point}?search={target}&fields={filters}'
   headers = {'user-key': environ.get('IGDB_KEY')}
 
-  # could throw a client error
   async with ClientSession(headers=headers, raise_for_status=False) as sess:
     try:
       async with sess.get(url, raise_for_status=True) as res:
@@ -107,7 +106,7 @@ class GamesCog(commands.Cog, name='Games'):
                                    activity=discord.Game(game_name))
 
     member = member if member is not None else ctx.author
-    filters = 'name,first_release_date,cover.url,genres.name'
+    filters = 'name,first_release_date,cover.url,genres.name,involved_companies.company.name'
     game, err = await async_query_igdb('games', game_name, filters)
     timestamp = game.get('first_release_date', False)
 

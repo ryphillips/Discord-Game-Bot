@@ -22,10 +22,10 @@ def make_game_embed(game: dict, title: str, description: str, **options) -> disc
   '''
   embed = discord.Embed(title=title,
                         description=description,
-                        colour=1024228, # blue
+                        colour=1024228,
                         type='rich')
 
-  # options passed in are all turned fields
+  # options passed in are all turned into fields
   for key, value in options.items():
     embed.add_field(name=key, value=game.get(key, value))
 
@@ -44,6 +44,18 @@ def make_game_embed(game: dict, title: str, description: str, **options) -> disc
     if not genres:
       genres = 'Any'
 
+    companies = ''
+    if game.get('involved_companies', None) is not None:
+      for comp in game['involved_companies']:
+        if companies:
+          companies += ', '
+        if comp['company'].get('name', None) is not None:
+          companies += comp['company']['name']
+
+    if not companies:
+      companies = 'Unknown'
+    
+    embed.add_field(name='Companies', value=companies, inline=False)
     embed.add_field(name='Genres', value=genres)
     git = 'Powered by https://github.com/ryphillips/DiscordBot/blob/master/cogs/GamesCog.py'
     embed.set_footer(text=git, icon_url=game_pic_sm)

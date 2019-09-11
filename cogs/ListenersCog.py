@@ -10,7 +10,7 @@ class ListenersCog(commands.Cog, name='Listeners'):
   async def on_message(self, message):
     '''
     @listener
-    When any member send a message
+    When any member sends a message
     '''
     pass
 
