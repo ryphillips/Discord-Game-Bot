@@ -13,13 +13,21 @@ class IgdbGame(object):
   @property
   def companies(self) -> str:
     '''Returns a list of all the invlved companies'''
-    pass
+    if not self.josn.get('involved_companies', False):
+      
+
+
 
   @property
   def genres(self):
     '''Returns a list of all the genres for the game'''
-    if not self.json.get('genres')
-    pass
+    if not self.json.get('genres', False):
+      return []
+    genre_list = []
+    for genre in self.json['genres']:
+      genre_list.append(genre)
+    return genre_list
+
 
   @property
   def big_image(self) -> str:
