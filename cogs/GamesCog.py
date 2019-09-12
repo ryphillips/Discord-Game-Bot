@@ -6,7 +6,7 @@ from json import loads
 from aiohttp import ClientSession, ClientError
 from discord.ext import commands
 import discord
-from .utils import time_delta_tuple, make_game_embed
+from utils import time_delta_tuple, make_game_embed
 
 async def async_query_igdb(e_point: str, target: str, filters: str) -> tuple:
   '''

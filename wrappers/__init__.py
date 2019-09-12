@@ -1,0 +1,1 @@
+from .IgdbGame import IgdbGame

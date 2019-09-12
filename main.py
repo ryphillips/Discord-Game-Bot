@@ -22,12 +22,6 @@ async def on_ready():
   await BOT.change_presence(status=discord.Status.idle,
                             activity=discord.Game('Dark Souls 3'))
 
-@BOT.event
-async def on_error():
-  '''Adjust error callback'''
-  pass
-
-
 if __name__ == '__main__':
   try:
     print('\nThe bot is now active\nPress (ctrl c) to deactivate and exit\n')
