@@ -11,9 +11,9 @@ class IgdbGame(object):
     self._json = None
     self.json = json
 
-
   @property
   def json(self) -> dict:
+    '''Returns the json data dictionary'''
     return self._json
 
   @json.setter
@@ -29,7 +29,7 @@ class IgdbGame(object):
   def companies(self) -> list:
     '''Returns a list of all the invlved companies'''
     if not self._json.get('involved_companies', False):
-      return []
+      return ['Unknown']
     return [x['company']['name'] for x in self.json['involved_companies']]
 
   @property
@@ -42,7 +42,8 @@ class IgdbGame(object):
   @property
   def big_image(self) -> str:
     '''Returns a full sized cover image url'''
-    return self.small_image.replace('t_thumb', 't_cover_big') if self.small_image else ''
+    sm_img = self.small_image
+    return sm_img.replace('t_thumb', 't_cover_big') if sm_img else ''
 
   @property
   def small_image(self) -> str:
@@ -50,6 +51,10 @@ class IgdbGame(object):
     if self.json.get('cover', False):
       return 'https:' + self.json['cover']['url']
     return ''
+  
+  @property
+  def date(self):
+    pass
 
   def copy(self) -> dict:
     '''Returns a deep copy of the json data'''
