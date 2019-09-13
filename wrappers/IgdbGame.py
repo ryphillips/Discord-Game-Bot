@@ -1,33 +1,44 @@
 '''
-Ryan Phillips 2019 ©
-
+ryphillips 2019
 Igdb Game object Wrapper for python
 '''
+from copy import deepcopy
+
+def check_json_val(function):
+  def wrap(*args):
+    print(args, function)
+  return wrap
 
 class IgdbGame(object):
   '''Wraps a igdb game query response into a valid python object'''
-  def __init__(self, json: dict, **opt):
-    self.json = json
-    self.opt = opt
+  def __init__(self, json: dict):
+    if not isinstance(json, dict):
+      raise TypeError('json data must be in a dictionary')
+    self.json = deepcopy(json) if json else None
 
   @property
-  def companies(self) -> str:
+  def json(self) -> dict:
+    return self.json
+
+  @json.setter
+  def json(self, json: dict) -> None:
+    if not isinstance(json, dict):
+      raise TypeError('Json argument must be a dict')
+    self.json = deepcopy(json)
+
+  @property
+  def companies(self) -> list:
     '''Returns a list of all the invlved companies'''
-    if not self.josn.get('involved_companies', False):
-      
-
-
+    if not self.json.get('involved_companies', False):
+      return []
+    return [x['company']['name'] for x in self.json['involved_companies']]
 
   @property
-  def genres(self):
+  def genres(self) -> list:
     '''Returns a list of all the genres for the game'''
     if not self.json.get('genres', False):
       return []
-    genre_list = []
-    for genre in self.json['genres']:
-      genre_list.append(genre)
-    return genre_list
-
+    return [x['name'] for x in self.json['genres']]
 
   @property
   def big_image(self) -> str:
@@ -41,13 +52,6 @@ class IgdbGame(object):
       return 'https:' + self.json['cover']['url']
     return ''
 
-  def copy(self):
-    '''Returns a shallow copy of the json data'''
-    return self.json.copy()
-
-
-
-
-
-
-
+  def copy(self) -> dict:
+    '''Returns a deep copy of the json data'''
+    return deepcopy(self.json)
