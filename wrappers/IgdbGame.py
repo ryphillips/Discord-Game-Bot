@@ -3,41 +3,40 @@ ryphillips 2019
 Igdb Game object Wrapper for python
 '''
 from copy import deepcopy
-
-def check_json_val(function):
-  def wrap(*args):
-    print(args, function)
-  return wrap
+import discord
 
 class IgdbGame(object):
   '''Wraps a igdb game query response into a valid python object'''
   def __init__(self, json: dict):
-    if not isinstance(json, dict):
-      raise TypeError('json data must be in a dictionary')
-    self.json = deepcopy(json) if json else None
+    self._json = None
+    self.json = json
+
 
   @property
   def json(self) -> dict:
-    return self.json
+    return self._json
 
   @json.setter
   def json(self, json: dict) -> None:
     if not isinstance(json, dict):
-      raise TypeError('Json argument must be a dict')
-    self.json = deepcopy(json)
+      raise TypeError('Json property must be a dictionary')
+    self._json = deepcopy(json) if json else {}
+
+  def to_embed(self) -> discord.Embed:
+    pass
 
   @property
   def companies(self) -> list:
     '''Returns a list of all the invlved companies'''
-    if not self.json.get('involved_companies', False):
+    if not self._json.get('involved_companies', False):
       return []
     return [x['company']['name'] for x in self.json['involved_companies']]
 
   @property
   def genres(self) -> list:
     '''Returns a list of all the genres for the game'''
-    if not self.json.get('genres', False):
-      return []
+    if not self._json.get('genres', False):
+      return ['None']
     return [x['name'] for x in self.json['genres']]
 
   @property
